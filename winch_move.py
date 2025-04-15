@@ -104,11 +104,68 @@ def parse_byte_string(byte_string):
         print(f"Error parsing input: {e}")
         return None
 
-def execute_command_sequence(bus):
+def execute_command_sequence_up(bus):
     """Execute the sequence of commands"""
     # Step 1: Send command 94 00 00 A0 C1 D0 07 00
     print("\nStep 1: Sending initial command")
     data = parse_byte_string("94 00 00 A0 41 D0 07 00")
+    if data:
+        send_message(bus, data)
+        response1 = wait_for_response()
+        if not response1:
+            print("Warning: No response to command 1, continuing anyway")
+    
+    # Step 2: Send command 91 00 00 00 00 00 00 00
+    print("\nStep 2: Sending second command")
+    data = parse_byte_string("91 00 00 00 00 00 00 00")
+    if data:
+        send_message(bus, data)
+        response2 = wait_for_response()
+        if not response2:
+            print("Warning: No response to command 2, continuing anyway")
+    
+    # Wait 2 seconds
+    print("\nWaiting 2 seconds...")
+    time.sleep(2)
+    
+    # Step 3: Send command B4 13 00 00 00 00 00 00
+    print("\nStep 3: Sending command to get data")
+    data = parse_byte_string("B4 13 00 00 00 00 00 00")
+    if data:
+        send_message(bus, data)
+        response3 = wait_for_response()
+        
+        if response3:
+            # Extract last 4 bytes from response
+            last_four_bytes = response3.data[-4:]
+            print(f"Extracted 4 bytes: {format_can_data(last_four_bytes)}")
+            
+            # Step 4: Send command 95 [4 bytes] 32 14 00
+            print("\nStep 4: Sending final command with extracted bytes")
+            final_command = bytes([0x95]) + last_four_bytes + bytes([0x32, 0x14, 0x00])
+            
+            # Ensure it's exactly 8 bytes
+            if len(final_command) > 8:
+                final_command = final_command[:8]
+            elif len(final_command) < 8:
+                final_command = final_command + bytes([0x00] * (8 - len(final_command)))
+            
+            print(f"Final command: {format_can_data(final_command)}")
+            send_message(bus, final_command)
+            response4 = wait_for_response()
+            
+            if response4:
+                print("\nCommand sequence completed successfully")
+            else:
+                print("\nNo response to final command")
+        else:
+            print("\nError: No response to command B4, cannot proceed")
+
+def execute_command_sequence_down(bus):
+    """Execute the sequence of commands"""
+    # Step 1: Send command 94 00 00 A0 C1 D0 07 00
+    print("\nStep 1: Sending initial command")
+    data = parse_byte_string("94 00 00 A0 C1 D0 07 00")
     if data:
         send_message(bus, data)
         response1 = wait_for_response()
@@ -176,7 +233,7 @@ def main():
     
     try:
         # Execute the command sequence
-        execute_command_sequence(bus)
+        execute_command_sequence_down(bus)
         
         # Keep the script running to see any additional responses
         print("\nCommand sequence complete. Press Ctrl+C to exit...")
