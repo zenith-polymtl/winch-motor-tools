@@ -108,7 +108,7 @@ def execute_command_sequence_up(bus):
     """Execute the sequence of commands"""
     # Step 1: Send command 94 00 00 A0 C1 D0 07 00
     print("\nStep 1: Sending initial command")
-    data = parse_byte_string("94 00 00 A0 41 D0 07 00")
+    data = parse_byte_string("94 00 00 A0 C1 D0 07 00")
     if data:
         send_message(bus, data)
         response1 = wait_for_response()
@@ -165,7 +165,7 @@ def execute_command_sequence_down(bus):
     """Execute the sequence of commands"""
     # Step 1: Send command 94 00 00 A0 C1 D0 07 00
     print("\nStep 1: Sending initial command")
-    data = parse_byte_string("94 00 00 A0 C1 D0 07 00")
+    data = parse_byte_string("94 00 00 A0 41 D0 07 00")
     if data:
         send_message(bus, data)
         response1 = wait_for_response()
