@@ -104,7 +104,7 @@ def parse_byte_string(byte_string):
         print(f"Error parsing input: {e}")
         return None
 
-def execute_command_sequence_up(bus):
+def execute_command_sequence_up(bus,time_move=2):
     """Execute the sequence of commands"""
     # Step 1: Send command 94 00 00 A0 C1 D0 07 00
     print("\nStep 1: Sending initial command")
@@ -126,7 +126,7 @@ def execute_command_sequence_up(bus):
     
     # Wait 2 seconds
     print("\nWaiting 2 seconds...")
-    time.sleep(2)
+    time.sleep(time_move)
     
     # Step 3: Send command B4 13 00 00 00 00 00 00
     print("\nStep 3: Sending command to get data")
@@ -161,7 +161,7 @@ def execute_command_sequence_up(bus):
         else:
             print("\nError: No response to command B4, cannot proceed")
 
-def execute_command_sequence_down(bus):
+def execute_command_sequence_down(bus, time_move=2):
     """Execute the sequence of commands"""
     # Step 1: Send command 94 00 00 A0 C1 D0 07 00
     print("\nStep 1: Sending initial command")
@@ -183,7 +183,7 @@ def execute_command_sequence_down(bus):
     
     # Wait 2 seconds
     print("\nWaiting 2 seconds...")
-    time.sleep(2)
+    time.sleep(time_move)
     
     # Step 3: Send command B4 13 00 00 00 00 00 00
     print("\nStep 3: Sending command to get data")
@@ -233,7 +233,7 @@ def main():
     
     try:
         # Execute the command sequence
-        execute_command_sequence_down(bus)
+        execute_command_sequence_down(bus,2)
         
         # Keep the script running to see any additional responses
         print("\nCommand sequence complete. Press Ctrl+C to exit...")
